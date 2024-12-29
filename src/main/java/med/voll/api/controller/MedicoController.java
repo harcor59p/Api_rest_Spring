@@ -2,8 +2,8 @@ package med.voll.api.controller;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import med.voll.api.direccion.dtoDatosDireccion;
-import med.voll.api.medico.*;
+import med.voll.api.domain.direccion.dtoDatosDireccion;
+import med.voll.api.domain.medico.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +23,7 @@ public class MedicoController {
     private MedicoRepository medicoRepository ;
 
     @PostMapping
-    public ResponseEntity<dtoDatosRespuestaMedico> registrarMedico(@RequestBody @Valid dtoDatosRegistroMedico datosRegistroMedico ,  UriComponentsBuilder uriComponetsBuilder){
+    public ResponseEntity<dtoDatosRespuestaMedico> registrarMedico(@RequestBody @Valid dtoDatosRegistroMedico datosRegistroMedico , UriComponentsBuilder uriComponetsBuilder){
         Medico medico = medicoRepository.save(new Medico(datosRegistroMedico)) ;
         dtoDatosRespuestaMedico dtoDatosRespuestaMedico = new dtoDatosRespuestaMedico(medico.getId() , medico.getNombre(), medico.getDocumento() , medico.getEmail(), medico.getTelefono(), medico.getEspecialidad().toString()
                 , new dtoDatosDireccion(medico.getDireccion().getCalle(), medico.getDireccion().getDistrito() , medico.getDireccion().getDistrito() , medico.getDireccion().getCiudad()
@@ -33,8 +33,8 @@ public class MedicoController {
     }
 
     @GetMapping
-    public Page<dtoListadoMedicos> listadoMedicos(@PageableDefault(size = 4 ) Pageable paginacion){
-        return medicoRepository.findByActivoTrue(paginacion).map(dtoListadoMedicos::new);
+    public ResponseEntity<Page<dtoListadoMedicos>> listadoMedicos(@PageableDefault(size = 4 ) Pageable paginacion){
+        return ResponseEntity.ok(medicoRepository.findByActivoTrue(paginacion).map(dtoListadoMedicos::new));
 //        return medicoRepository.findAll(paginacion).map(dtoListadoMedicos::new);
 
     }
